@@ -6,171 +6,399 @@
     <title>Click Click Close | RPCCP Strategic Intelligence Platform</title>
     <meta name="description" content="RPCCP runs 5 AI models in structured debate until unanimous consensus. Political strategy, medical research, legal analysis. It doesn't find answers — it finds questions.">
     <style>
+        :root {
+            --bg: #0d1117;
+            --surface: #161b22;
+            --surface2: #1a1f27;
+            --border: #30363d;
+            --text: #c9d1d9;
+            --text-dim: #8b949e;
+            --accent: #6366f1;
+            --accent2: #818cf8;
+            --blue: #58a6ff;
+            --green: #3fb950;
+            --amber: #f59e0b;
+            --cyan: #06b6d4;
+            --red: #ef4444;
+        }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0d1117;
-            color: #c9d1d9;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
         }
-        .hero {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 40px 20px;
+
+        /* ── Demo Banner ─────────────────────────── */
+        .demo-banner {
+            display: none;
+            background: var(--amber);
+            color: #0d1117;
             text-align: center;
+            padding: 10px 16px;
+            font-weight: 600;
+            font-size: 14px;
         }
-        h1 {
-            font-size: 3em;
+        .demo-banner.expired {
+            background: var(--red);
+            color: #fff;
+        }
+        .demo-banner a { color: #fff; text-decoration: underline; }
+
+        /* ── Hero ─────────────────────────────────── */
+        .hero {
+            text-align: center;
+            padding: 60px 20px 20px;
+        }
+        .hero h1 {
+            font-size: 2.8em;
             font-weight: 700;
             color: #fff;
             margin-bottom: 8px;
         }
-        h1 span { color: #58a6ff; }
-        .subtitle {
-            font-size: 1.3em;
-            color: #8b949e;
-            margin-bottom: 48px;
+        .hero h1 span { color: var(--blue); }
+        .hero .subtitle {
+            font-size: 1.2em;
+            color: var(--text-dim);
             font-weight: 300;
+            margin-bottom: 12px;
+        }
+
+        /* ── Query Box ───────────────────────────── */
+        .query-section {
+            max-width: 700px;
+            margin: 32px auto;
+            padding: 0 20px;
+        }
+        .query-box {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+        }
+        .query-input {
+            flex: 1;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            color: #fff;
+            font-family: inherit;
+            font-size: 1.05rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .query-input:focus { border-color: var(--accent); }
+        .query-input::placeholder { color: var(--text-dim); }
+        .run-btn {
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 16px 28px;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .run-btn:hover { background: var(--accent2); }
+        .run-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* ── Status / Progress ───────────────────── */
+        .status-bar {
+            display: none;
+            text-align: center;
+            padding: 12px;
+            color: var(--amber);
+            font-size: 0.85rem;
+        }
+        .spinner {
+            display: inline-block;
+            width: 12px; height: 12px;
+            border: 2px solid var(--border);
+            border-top-color: var(--amber);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: 6px;
+            vertical-align: middle;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .progress-bar {
+            display: none;
+            max-width: 700px;
+            margin: 0 auto 16px;
+            height: 4px;
+            background: var(--surface2);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--accent);
+            border-radius: 2px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        /* ── Thinking ────────────────────────────── */
+        .thinking-box {
+            display: none;
+            max-width: 700px;
+            margin: 0 auto 24px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 28px;
+            text-align: center;
+        }
+        .thinking-phase {
+            font-size: 1.1rem;
+            color: var(--accent2);
+            margin-bottom: 6px;
+            min-height: 1.5em;
+            transition: opacity 0.3s;
+        }
+        .thinking-detail {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            font-style: italic;
+            min-height: 1.2em;
+        }
+        .thinking-dots {
+            margin: 14px 0;
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+        }
+        .thinking-dots span {
+            width: 8px; height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+        .thinking-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .thinking-dots span:nth-child(3) { animation-delay: 0.4s; }
+        .thinking-dots span:nth-child(4) { animation-delay: 0.6s; }
+        .thinking-dots span:nth-child(5) { animation-delay: 0.8s; }
+        @keyframes pulse {
+            0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+            40% { opacity: 1; transform: scale(1.2); }
+        }
+
+        /* ── Result ──────────────────────────────── */
+        .result-card {
+            display: none;
+            max-width: 700px;
+            margin: 0 auto 32px;
+            background: var(--surface);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 28px;
+        }
+        .result-card h2 {
+            color: var(--accent2);
+            font-size: 0.95rem;
+            letter-spacing: 0.15em;
+            margin-bottom: 12px;
+        }
+        .result-content {
+            font-size: 0.9rem;
+            line-height: 1.8;
+            color: var(--text);
+            white-space: pre-wrap;
+        }
+
+        /* ── How It Works ────────────────────────── */
+        .info-section {
+            max-width: 700px;
+            margin: 40px auto;
+            padding: 0 20px;
         }
         .engine-box {
-            background: #161b22;
-            border: 1px solid #30363d;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 12px;
-            padding: 40px;
-            max-width: 700px;
-            width: 100%;
-            margin-bottom: 48px;
-            text-align: left;
+            padding: 32px;
+            margin-bottom: 32px;
         }
         .engine-box h2 {
-            font-size: 1.1em;
-            color: #58a6ff;
+            font-size: 1rem;
+            color: var(--blue);
             letter-spacing: 0.1em;
             text-transform: uppercase;
-            margin-bottom: 16px;
+            margin-bottom: 14px;
         }
         .engine-box p {
-            font-size: 1em;
+            font-size: 0.95em;
             line-height: 1.8;
-            color: #c9d1d9;
-            margin-bottom: 16px;
+            color: var(--text);
+            margin-bottom: 14px;
         }
+
         .stats {
             display: flex;
-            gap: 24px;
+            gap: 16px;
             flex-wrap: wrap;
             justify-content: center;
-            margin: 40px 0;
+            margin: 28px 0;
         }
         .stat {
-            background: #161b22;
-            border: 1px solid #30363d;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 20px 28px;
+            padding: 16px 24px;
             text-align: center;
-            min-width: 160px;
+            min-width: 140px;
         }
-        .stat .number {
-            font-size: 2em;
-            font-weight: 700;
-            color: #58a6ff;
-        }
-        .stat .label {
-            font-size: 0.8em;
-            color: #8b949e;
-            margin-top: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.05em;
-        }
+        .stat .number { font-size: 1.8em; font-weight: 700; color: var(--blue); }
+        .stat .label { font-size: 0.75em; color: var(--text-dim); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.05em; }
+
         .domains {
             display: flex;
-            gap: 16px;
+            gap: 12px;
             flex-wrap: wrap;
             justify-content: center;
-            margin: 32px 0;
+            margin: 24px 0;
         }
         .domain {
-            background: #161b22;
-            border: 1px solid #30363d;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 6px;
-            padding: 12px 20px;
-            font-size: 0.9em;
+            padding: 10px 16px;
+            font-size: 0.85em;
         }
-        .domain .icon { margin-right: 8px; }
         .domain .name { color: #fff; font-weight: 600; }
-        .domain .desc { color: #8b949e; font-size: 0.85em; }
-        .cta {
-            margin-top: 40px;
-            font-size: 1em;
-            color: #8b949e;
-        }
-        .cta a {
-            color: #58a6ff;
-            text-decoration: none;
-        }
-        .cta a:hover { text-decoration: underline; }
-        .pricing {
-            max-width: 700px;
-            width: 100%;
-            margin: 40px 0;
-        }
-        .pricing h2 {
-            text-align: center;
-            font-size: 1.4em;
-            color: #fff;
-            margin-bottom: 24px;
-        }
+        .domain .desc { color: var(--text-dim); font-size: 0.8em; }
+
+        /* ── Pricing ─────────────────────────────── */
+        .pricing { margin: 40px 0; }
+        .pricing h2 { text-align: center; font-size: 1.3em; color: #fff; margin-bottom: 20px; }
         .tiers {
             display: flex;
-            gap: 16px;
+            gap: 14px;
             flex-wrap: wrap;
             justify-content: center;
         }
         .tier {
-            background: #161b22;
-            border: 1px solid #30363d;
+            background: var(--surface);
+            border: 1px solid var(--border);
             border-radius: 8px;
-            padding: 24px;
+            padding: 20px;
             flex: 1;
-            min-width: 200px;
-            max-width: 220px;
+            min-width: 180px;
+            max-width: 210px;
         }
-        .tier .price {
-            font-size: 1.8em;
-            font-weight: 700;
-            color: #fff;
+        .tier .price { font-size: 1.6em; font-weight: 700; color: #fff; }
+        .tier .price span { font-size: 0.5em; color: var(--text-dim); font-weight: 400; }
+        .tier .name { font-size: 0.8em; color: var(--blue); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; }
+        .tier .detail { font-size: 0.8em; color: var(--text-dim); line-height: 1.6; }
+        .mission-tier { border-color: #238636; }
+        .mission-tier .name { color: var(--green); }
+
+        /* ── History ─────────────────────────────── */
+        .history-section {
+            max-width: 700px;
+            margin: 32px auto;
+            padding: 0 20px;
+            border-top: 1px solid var(--border);
+            padding-top: 24px;
         }
-        .tier .price span { font-size: 0.5em; color: #8b949e; font-weight: 400; }
-        .tier .name {
-            font-size: 0.85em;
-            color: #58a6ff;
-            text-transform: uppercase;
-            letter-spacing: 0.08em;
+        .history-section h2 {
+            color: var(--text-dim);
+            font-size: 0.8rem;
+            letter-spacing: 0.15em;
             margin-bottom: 12px;
         }
-        .tier .detail {
-            font-size: 0.85em;
-            color: #8b949e;
-            line-height: 1.6;
+        .history-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        .mission-tier { border-color: #238636; }
-        .mission-tier .name { color: #3fb950; }
+        .history-item:hover { border-color: var(--accent); }
+        .history-query { font-size: 0.85rem; color: var(--text); flex: 1; }
+        .history-meta { font-size: 0.7rem; color: var(--text-dim); text-align: right; margin-left: 12px; }
+
+        /* ── Footer ──────────────────────────────── */
         .footer {
-            margin-top: 60px;
-            font-size: 0.85em;
+            margin-top: 48px;
+            padding: 24px 20px;
+            font-size: 0.8em;
             color: #484f58;
             text-align: center;
+        }
+        .footer a { color: var(--blue); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+
+        /* ── Backend Offline Banner ──────────────── */
+        .offline-notice {
+            display: none;
+            max-width: 700px;
+            margin: 0 auto 16px;
+            background: #1c1c28;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 14px 20px;
+            text-align: center;
+            font-size: 0.85em;
+            color: var(--text-dim);
         }
     </style>
 </head>
 <body>
+    <!-- Demo Banner -->
+    <div class="demo-banner" id="demoBanner">
+        DEMO MODE — <span id="demoCount">5</span> runs remaining
+    </div>
+
+    <!-- Hero -->
     <div class="hero">
         <h1>Click Click <span>Close</span></h1>
         <div class="subtitle">It doesn't find answers. It finds questions.</div>
+    </div>
 
+    <!-- Query Box -->
+    <div class="query-section">
+        <div class="query-box">
+            <input type="text" class="query-input" id="queryInput" placeholder="Ask your question..." autofocus />
+            <button class="run-btn" id="runBtn" onclick="startRun()">ASK</button>
+        </div>
+    </div>
+
+    <div class="offline-notice" id="offlineNotice">
+        Backend is starting up — this may take a moment on first load.
+    </div>
+    <div class="status-bar" id="statusBar"></div>
+    <div class="progress-bar" id="progressBar"><div class="progress-fill" id="progressFill"></div></div>
+
+    <div class="thinking-box" id="thinkingBox">
+        <div class="thinking-dots"><span></span><span></span><span></span><span></span><span></span></div>
+        <div class="thinking-phase" id="thinkingPhase"></div>
+        <div class="thinking-detail" id="thinkingDetail"></div>
+    </div>
+
+    <div class="result-card" id="resultCard">
+        <h2>CONSENSUS</h2>
+        <div class="result-content" id="resultContent"></div>
+    </div>
+
+    <!-- History -->
+    <div class="history-section" id="historySection" style="display:none;">
+        <h2>PREVIOUS RUNS</h2>
+        <div id="historyList"></div>
+    </div>
+
+    <!-- How It Works -->
+    <div class="info-section">
         <div class="engine-box">
             <h2>How RPCCP Works</h2>
             <p>Five AI models analyze your question simultaneously. They debate. They disagree. They challenge each other's assumptions. They keep going until they reach unanimous consensus — or declare exactly where they can't agree and why.</p>
@@ -178,37 +406,16 @@
         </div>
 
         <div class="stats">
-            <div class="stat">
-                <div class="number">5</div>
-                <div class="label">AI Models</div>
-            </div>
-            <div class="stat">
-                <div class="number">4</div>
-                <div class="label">Proven Domains</div>
-            </div>
-            <div class="stat">
-                <div class="number">&lt;2min</div>
-                <div class="label">To Consensus</div>
-            </div>
+            <div class="stat"><div class="number">5</div><div class="label">AI Models</div></div>
+            <div class="stat"><div class="number">4</div><div class="label">Proven Domains</div></div>
+            <div class="stat"><div class="number">&lt;2min</div><div class="label">To Consensus</div></div>
         </div>
 
         <div class="domains">
-            <div class="domain">
-                <span class="name">Political Strategy</span><br>
-                <span class="desc">Campaign analysis, talking points, debate prep</span>
-            </div>
-            <div class="domain">
-                <span class="name">Medical Research</span><br>
-                <span class="desc">Therapeutic protocols, literature convergence</span>
-            </div>
-            <div class="domain">
-                <span class="name">Legal Analysis</span><br>
-                <span class="desc">Case law, motions, defense strategy</span>
-            </div>
-            <div class="domain">
-                <span class="name">Business Strategy</span><br>
-                <span class="desc">Market analysis, IP protection, valuation</span>
-            </div>
+            <div class="domain"><span class="name">Political Strategy</span><br><span class="desc">Campaign analysis, talking points, debate prep</span></div>
+            <div class="domain"><span class="name">Medical Research</span><br><span class="desc">Therapeutic protocols, literature convergence</span></div>
+            <div class="domain"><span class="name">Legal Analysis</span><br><span class="desc">Case law, motions, defense strategy</span></div>
+            <div class="domain"><span class="name">Business Strategy</span><br><span class="desc">Market analysis, IP protection, valuation</span></div>
         </div>
 
         <div class="pricing">
@@ -231,16 +438,282 @@
                 </div>
             </div>
         </div>
-
-        <div class="cta">
-            <p>Don Brown &middot; Trinity, Texas</p>
-            <p><a href="mailto:don@dandydon.media">don@dandydon.media</a> &middot; (409) 332-9313</p>
-        </div>
-
-        <div class="footer">
-            <p>Powered by RPCCP — Recursive Precision Cognitive Calibration Protocol</p>
-            <p>Cancer cures published free. Because that's what Jesus would do.</p>
-        </div>
     </div>
+
+    <div class="footer">
+        <p>Powered by RPCCP — Recursive Precision Cognitive Calibration Protocol</p>
+        <p>Don Brown · Trinity, Texas · <a href="mailto:don@dandydon.media">don@dandydon.media</a> · (409) 332-9313</p>
+        <p style="margin-top:8px;">Cancer cures published free. Because that's what Jesus would do.</p>
+    </div>
+
+<script>
+    // ── Config ──────────────────────────────────────────
+    // API backend URL — change this to your Render deployment URL
+    // e.g. https://clickclickclose-help.onrender.com
+    const BACKEND_URL = 'https://clickclickclose-help.onrender.com';
+
+    // Auto-detect: if served by the backend itself, use same origin
+    const API = (window.location.hostname === 'localhost' || window.location.port)
+        ? window.location.origin
+        : BACKEND_URL;
+
+    const params = new URLSearchParams(window.location.search);
+    const DEMO_KEY = params.get('key') || '';
+
+    // Show demo banner
+    if (DEMO_KEY) {
+        document.getElementById('demoBanner').style.display = 'block';
+    }
+
+    function updateDemoCount(remaining) {
+        const el = document.getElementById('demoCount');
+        const banner = document.getElementById('demoBanner');
+        if (el) el.textContent = remaining;
+        if (remaining <= 0) {
+            banner.classList.add('expired');
+            banner.innerHTML = 'DEMO EXPIRED — <a href="https://clickclickclose.help">Subscribe for unlimited access</a>';
+            document.getElementById('runBtn').disabled = true;
+        }
+    }
+
+    function apiFetch(url, opts = {}) {
+        if (DEMO_KEY) {
+            const sep = url.includes('?') ? '&' : '?';
+            url = url + sep + 'key=' + encodeURIComponent(DEMO_KEY);
+        }
+        return fetch(url, opts);
+    }
+
+    // ── State ───────────────────────────────────────────
+    let ws = null;
+    let passCount = 0;
+    const totalPasses = 7;
+
+    const thinkingMessages = [
+        { phase: "Examining your question from multiple angles", detail: "Each perspective reveals different assumptions" },
+        { phase: "Challenging initial assumptions", detail: "The obvious answer is rarely the complete answer" },
+        { phase: "Exploring unconventional possibilities", detail: "What if the constraints themselves are wrong?" },
+        { phase: "Expanding the problem space", detail: "Looking for dimensions nobody considered" },
+        { phase: "Testing for blind spots", detail: "What are we all missing?" },
+        { phase: "Pressure-testing the strongest ideas", detail: "Only the ideas that survive scrutiny make it through" },
+        { phase: "Building consensus", detail: "Synthesizing the strongest arguments into one answer" },
+    ];
+
+    let thinkingInterval = null;
+
+    // ── Thinking Animation ──────────────────────────────
+    function startThinking() {
+        document.getElementById('thinkingBox').style.display = 'block';
+        updateThinking(0);
+    }
+
+    function updateThinking(index) {
+        if (index >= thinkingMessages.length) index = thinkingMessages.length - 1;
+        const phase = document.getElementById('thinkingPhase');
+        const detail = document.getElementById('thinkingDetail');
+        phase.style.opacity = '0';
+        detail.style.opacity = '0';
+        setTimeout(() => {
+            phase.textContent = thinkingMessages[index].phase;
+            detail.textContent = thinkingMessages[index].detail;
+            phase.style.opacity = '1';
+            detail.style.opacity = '1';
+        }, 300);
+    }
+
+    function stopThinking() {
+        document.getElementById('thinkingBox').style.display = 'none';
+    }
+
+    // ── Init ────────────────────────────────────────────
+    window.addEventListener('load', () => {
+        checkBackend();
+        loadHistory();
+    });
+
+    document.getElementById('queryInput').addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            startRun();
+        }
+    });
+
+    async function checkBackend() {
+        try {
+            const res = await apiFetch(`${API}/api/health`);
+            if (res.ok) {
+                document.getElementById('offlineNotice').style.display = 'none';
+            } else {
+                document.getElementById('offlineNotice').style.display = 'block';
+            }
+        } catch (e) {
+            document.getElementById('offlineNotice').style.display = 'block';
+        }
+    }
+
+    // ── History ─────────────────────────────────────────
+    async function loadHistory() {
+        try {
+            const res = await apiFetch(`${API}/api/runs`);
+            if (!res.ok) return;
+            const runs = await res.json();
+            if (runs.length === 0) return;
+            document.getElementById('historySection').style.display = 'block';
+            const list = document.getElementById('historyList');
+            list.innerHTML = runs.slice(0, 20).map(r => `
+                <div class="history-item" onclick="loadRun('${r.id}')">
+                    <div class="history-query">${escapeHtml(r.query)}</div>
+                    <div class="history-meta"><div>${Math.round(r.duration)}s</div></div>
+                </div>
+            `).join('');
+        } catch (e) {
+            // Backend not reachable — history just stays hidden
+        }
+    }
+
+    async function loadRun(runId) {
+        try {
+            const res = await apiFetch(`${API}/api/runs/${runId}`);
+            const data = await res.json();
+            displayResult(data.final_synthesis || data.collision || 'No consensus reached.');
+            document.getElementById('queryInput').value = data.query || '';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } catch (e) {
+            console.error('Failed to load run:', e);
+        }
+    }
+
+    // ── Run ─────────────────────────────────────────────
+    async function startRun() {
+        const input = document.getElementById('queryInput');
+        const query = input.value.trim();
+        if (!query) return;
+
+        const btn = document.getElementById('runBtn');
+        btn.disabled = true;
+        btn.textContent = 'THINKING...';
+        passCount = 0;
+
+        document.getElementById('resultCard').style.display = 'none';
+        document.getElementById('progressBar').style.display = 'block';
+        document.getElementById('progressFill').style.width = '0%';
+        document.getElementById('offlineNotice').style.display = 'none';
+        startThinking();
+        showStatus('Analyzing your question...');
+
+        try {
+            const res = await apiFetch(`${API}/api/run`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query, mode: 'cloud' }),
+            });
+            const runData = await res.json();
+            if (!res.ok) {
+                showStatus(runData.detail || 'Error starting run');
+                btn.disabled = false;
+                btn.textContent = 'ASK';
+                stopThinking();
+                document.getElementById('progressBar').style.display = 'none';
+                return;
+            }
+            const { run_id } = runData;
+            if (runData.runs_remaining !== undefined) {
+                updateDemoCount(runData.runs_remaining);
+            }
+
+            const wsProtocol = API.startsWith('https') ? 'wss' : 'ws';
+            const wsHost = API.replace(/^https?:\/\//, '');
+            let wsUrl = `${wsProtocol}://${wsHost}/api/ws/${run_id}`;
+            if (DEMO_KEY) wsUrl += '?key=' + encodeURIComponent(DEMO_KEY);
+            ws = new WebSocket(wsUrl);
+
+            ws.onmessage = (event) => {
+                const msg = JSON.parse(event.data);
+                handleMessage(msg);
+            };
+
+            ws.onclose = () => {
+                btn.disabled = false;
+                btn.textContent = 'ASK';
+                hideStatus();
+                document.getElementById('progressBar').style.display = 'none';
+                loadHistory();
+            };
+
+            ws.onerror = () => {
+                btn.disabled = false;
+                btn.textContent = 'ASK';
+                showStatus('Connection error. Please try again.');
+                stopThinking();
+            };
+
+        } catch (e) {
+            btn.disabled = false;
+            btn.textContent = 'ASK';
+            showStatus('Failed to connect to backend.');
+            stopThinking();
+            document.getElementById('progressBar').style.display = 'none';
+        }
+    }
+
+    // ── Message Handler ─────────────────────────────────
+    function handleMessage(msg) {
+        switch (msg.type) {
+            case 'status':
+                showStatus(msg.message);
+                break;
+            case 'pass_start':
+                passCount++;
+                document.getElementById('progressFill').style.width = Math.round((passCount / totalPasses) * 100) + '%';
+                updateThinking(passCount - 1);
+                break;
+            case 'pass_complete':
+                document.getElementById('progressFill').style.width = Math.round((passCount / totalPasses) * 100) + '%';
+                break;
+            case 'collision_start':
+                document.getElementById('progressFill').style.width = '90%';
+                updateThinking(6);
+                break;
+            case 'collision_complete':
+                document.getElementById('progressFill').style.width = '100%';
+                stopThinking();
+                displayResult(msg.full);
+                break;
+            case 'complete':
+                hideStatus();
+                stopThinking();
+                break;
+            case 'error':
+                showStatus('Error: ' + msg.message);
+                stopThinking();
+                break;
+        }
+    }
+
+    // ── UI Helpers ──────────────────────────────────────
+    function displayResult(text) {
+        const card = document.getElementById('resultCard');
+        const content = document.getElementById('resultContent');
+        card.style.display = 'block';
+        content.textContent = text;
+        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function showStatus(msg) {
+        const bar = document.getElementById('statusBar');
+        bar.style.display = 'block';
+        bar.innerHTML = '<span class="spinner"></span> ' + escapeHtml(msg);
+    }
+
+    function hideStatus() {
+        document.getElementById('statusBar').style.display = 'none';
+    }
+
+    function escapeHtml(str) {
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+</script>
 </body>
 </html>
