@@ -1,4 +1,4 @@
-const CCC_FORM_ACCESS_KEY = 'YOUR_ACCESS_KEY_HERE'; // replace after step below
+const CCC_FORM_ACCESS_KEY = '73523431-3de2-4690-95c6-8ddd08623c9b'; // replace after step below
 (function(){
   'use strict';
   function getAllFormData(){
@@ -56,7 +56,7 @@ const CCC_FORM_ACCESS_KEY = 'YOUR_ACCESS_KEY_HERE'; // replace after step below
       const fd = getAllFormData();
       fd.page_url = location.href;
       fd.submitted_at = new Date().toISOString();
-      if(CCC_FORM_ACCESS_KEY === 'YOUR_ACCESS_KEY_HERE'){
+      if(CCC_FORM_ACCESS_KEY === '73523431-3de2-4690-95c6-8ddd08623c9b'){
         location.href = 'mailto:dandydonunhinged@gmail.com?subject=' + encodeURIComponent('New Deal Lead') + '&body=' + encodeURIComponent(formatForEmail(fd));
         return;
       }
